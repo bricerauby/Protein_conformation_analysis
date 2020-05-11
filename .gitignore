@@ -1,2 +1,7 @@
+data/*
 **/venv/*
 .vscode/*
+*runs*
+*__pycache__*
+*.ipynb_checkpoints/*
+*DS_Store*
