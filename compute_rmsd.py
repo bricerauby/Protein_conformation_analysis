@@ -40,11 +40,15 @@ def main(raw_args=None):
 
     coor_atom = np.array(coordinates).reshape(-1, 10, 3)
 
-    confs = align_array(coor_atom[:1000], 'atom')
+    test_dim = 1000
+    confs = align_array(coor_atom[:test_dim], 'atom')
     conf_obj = Conformations(confs, 'atom', 10)
-    rmsds = conf_obj.rmsds_to_reference(conf_obj, 0)
 
-    np.save('data/computed_rmsd.npy', rmsds)
+    rmsds = np.zeros((test_dim,test_dim))
+    for ref_idx in range(test_dim):
+        rmsds[ref_idx] = conf_obj.rmsds_to_reference(conf_obj, ref_idx)
+
+    np.save('data/test_1000_rmsd.npy', rmsds)
 
     return
 
