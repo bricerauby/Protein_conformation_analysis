@@ -1,4 +1,5 @@
 import numpy as np
+import scipy.sparse as sps
 import argparse
 from IRMSD import Conformations
 from IRMSD import align_array
@@ -40,15 +41,26 @@ def main(raw_args=None):
 
     coor_atom = np.array(coordinates).reshape(-1, 10, 3)
 
-    test_dim = 1000
+    test_dim = 10_000
+    nb_kept_values = 100
     confs = align_array(coor_atom[:test_dim], 'atom')
     conf_obj = Conformations(confs, 'atom', 10)
 
-    rmsds = np.zeros((test_dim,test_dim))
+    rows,cols,values = np.array([]),np.array([]),np.array([])
     for ref_idx in range(test_dim):
-        rmsds[ref_idx] = conf_obj.rmsds_to_reference(conf_obj, ref_idx)
+        rmsd_to_ref = conf_obj.rmsds_to_reference(conf_obj, ref_idx).astype('float32')
 
-    np.save('data/test_1000_rmsd.npy', rmsds)
+        cols_to_keep = np.argsort(rmsd_to_ref)[-nb_kept_values:]
+        idx_to_keep = [ref_idx for _ in range(nb_kept_values)]
+        values_to_keep = rmsd_to_ref[cols_to_keep]
+
+        rows = np.concatenate([rows,  idx_to_keep])
+        cols = np.concatenate([cols, cols_to_keep])
+        values = np.concatenate([values, values_to_keep])
+
+    rmsds = sparse.coo_matrix((values, (rows, cols)))
+    sps.save_npz('data/test_100_rmsd.npz', rmsds)
+    #np.save('data/test_1000_rmsd.npy', rmsds)
 
     return
 
