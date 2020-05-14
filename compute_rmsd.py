@@ -47,13 +47,14 @@ def main(raw_args=None):
     confs = align_array(coor_atom[:test_dim], 'atom')
     conf_obj = Conformations(confs, 'atom', 10)
     start = time.time()
-    rows, cols, values = np.array([]), np.array([]), np.array([])
+    rows, cols = np.array([], dtype=int), np.array([], dtype=int)
+    values = np.array([], dtype='float32')
     for ref_idx in range(test_dim):
         rmsd_to_ref = conf_obj.rmsds_to_reference(
             conf_obj, ref_idx).astype('float32')
 
+        idx_to_keep = np.array([ref_idx]*nb_kept_values)
         cols_to_keep = np.argsort(rmsd_to_ref)[-nb_kept_values:]
-        idx_to_keep = [ref_idx for _ in range(nb_kept_values)]
         values_to_keep = rmsd_to_ref[cols_to_keep]
 
         rows = np.concatenate([rows,  idx_to_keep])
