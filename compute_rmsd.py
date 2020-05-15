@@ -42,7 +42,7 @@ def main(raw_args=None):
 
     coor_atom = np.array(coordinates).reshape(-1, 10, 3)
 
-    test_dim = len(coor_atom)
+    test_dim = 100
     nb_kept_values = 1000
     confs = align_array(coor_atom[:test_dim], 'atom')
     conf_obj = Conformations(confs, 'atom', 10)
