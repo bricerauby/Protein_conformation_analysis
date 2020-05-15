@@ -50,6 +50,7 @@ def main(raw_args=None):
     rows, cols = np.array([], dtype=int), np.array([], dtype=int)
     values = np.array([], dtype='float32')
     for ref_idx in range(test_dim):
+        print(ref_idx)
         rmsd_to_ref = conf_obj.rmsds_to_reference(
             conf_obj, ref_idx).astype('float32')
 
