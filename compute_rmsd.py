@@ -18,13 +18,10 @@ def main(raw_args=None):
     parser = argparse.ArgumentParser()
     parser.add_argument('--structure_file', default=None,
                         type=str, help='path to the structure file')
-    parser.add_argument('--num_workers', type=int, default=4,
-                        help='dataloader threads')
-    parser.add_argument('--seed', type=int,
-                        default=np.random.randint(2**32 - 1),
-                        help='the seed for reproducing experiments')
-    parser.add_argument('--debug', action='store_true', default=False,
-                        help='whether to debug or not')
+    parser.add_argument('--n_points', default=None,
+                        type=int, help='number_of_points')
+    parser.add_argument('--n_neigh', default=1000,
+                        type=int, help='number_of_neighbor')
     args = parser.parse_args(raw_args)
     err = 'You should provide a structure_file'
     assert args.structure_file is not None, err
@@ -37,16 +34,20 @@ def main(raw_args=None):
     xyz.close()
 
     coor_atom = np.array(coordinates).reshape(-1, 10, 3)
+    if args.n_points is None:
+        test_dim = len(coor_atom)
+    else:
+        test_dim = args.n_points
 
-    test_dim = 1000
-    nb_kept_values = 100
+    nb_kept_values = args.n_neigh
     confs = align_array(coor_atom[:test_dim], 'atom')
     conf_obj = Conformations(confs, 'atom', 10)
     start = time.time()
     rows, cols = np.array([], dtype=int), np.array([], dtype=int)
     values = np.array([], dtype='float32')
     for ref_idx in range(test_dim):
-        print(ref_idx)
+        if ref_idx % 100 == 0:
+            print(ref_idx)
         rmsd_to_ref = conf_obj.rmsds_to_reference(
             conf_obj, ref_idx).astype('float32')
 
@@ -59,8 +60,9 @@ def main(raw_args=None):
         values = np.concatenate([values, values_to_keep])
     print('time taken', time.time() - start)
     rmsds = sps.coo_matrix((values, (rows, cols)))
-    sps.save_npz('data/test_{}_rmsd.npz'.format(test_dim), rmsds)
-    # np.save('data/test_1000_rmsd.npy', rmsds)
+    path = 'data/test_{}_rmsd_{}_neighbors.npz'.format(test_dim,
+                                                       nb_kept_values)
+    sps.save_npz(path, rmsds)
 
     return
 
