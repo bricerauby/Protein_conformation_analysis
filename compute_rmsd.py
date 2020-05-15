@@ -29,10 +29,6 @@ def main(raw_args=None):
     err = 'You should provide a structure_file'
     assert args.structure_file is not None, err
 
-    print("SEED used is ", args.seed)
-
-    np.random.seed(args.seed)
-
     coordinates = []
     xyz = open(args.structure_file)
     for line in xyz:
@@ -42,8 +38,8 @@ def main(raw_args=None):
 
     coor_atom = np.array(coordinates).reshape(-1, 10, 3)
 
-    test_dim = 100
-    nb_kept_values = 1000
+    test_dim = 1000
+    nb_kept_values = 100
     confs = align_array(coor_atom[:test_dim], 'atom')
     conf_obj = Conformations(confs, 'atom', 10)
     start = time.time()
@@ -63,11 +59,12 @@ def main(raw_args=None):
         values = np.concatenate([values, values_to_keep])
     print('time taken', time.time() - start)
     rmsds = sps.coo_matrix((values, (rows, cols)))
-    sps.save_npz('data/test_100_rmsd.npz', rmsds)
+    sps.save_npz('data/test_{}_rmsd.npz'.format(test_dim), rmsds)
     # np.save('data/test_1000_rmsd.npy', rmsds)
 
     return
 
 
 if __name__ == '__main__':
+    print('python script has started')
     main()
