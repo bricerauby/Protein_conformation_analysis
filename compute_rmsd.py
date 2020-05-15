@@ -42,8 +42,8 @@ def main(raw_args=None):
 
     coor_atom = np.array(coordinates).reshape(-1, 10, 3)
 
-    test_dim = 10000
-    nb_kept_values = 100
+    test_dim = len(coor_atom)
+    nb_kept_values = 1000
     confs = align_array(coor_atom[:test_dim], 'atom')
     conf_obj = Conformations(confs, 'atom', 10)
     start = time.time()
