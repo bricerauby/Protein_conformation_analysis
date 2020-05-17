@@ -52,7 +52,7 @@ def main(raw_args=None):
             conf_obj, ref_idx).astype('float32')
 
         idx_to_keep = np.array([ref_idx]*nb_kept_values)
-        cols_to_keep = np.argsort(rmsd_to_ref)[-nb_kept_values:]
+        cols_to_keep = np.argsort(rmsd_to_ref)[:nb_kept_values]
         values_to_keep = rmsd_to_ref[cols_to_keep]
 
         rows = np.concatenate([rows,  idx_to_keep])
