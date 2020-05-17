@@ -51,6 +51,8 @@ def main(raw_args=None):
                         type=int, help='number_of_points')
     parser.add_argument('--n_neigh', default=1000,
                         type=int, help='number_of_neighbor')
+    parser.add_argument('--id_worker', default=0,
+                        type=int, help='number of workers')
     parser.add_argument('--num_workers', default=0,
                         type=int, help='number of workers')
     args = parser.parse_args(raw_args)
@@ -80,7 +82,11 @@ def main(raw_args=None):
     start_time = time.time()
 
     rmsd_calculator = RmsdCalculator(conf_obj, nb_kept_values)
-    res = rmsd_calculator.compute_rmsd_mat_list(range(test_dim))
+    all_index = list(range(test_dim))
+    n_per_worker = test_dim // args.num_workers
+    start = args.id_worker * n_per_worker
+    end = min(test_dim, (args.id_worker + 1) * n_per_worker)
+    res = rmsd_calculator.compute_rmsd_mat_list(all_index[start:end])
     values, rows, cols = res
 
     print('time taken for rmsd computation', time.time() - start_time)
@@ -90,8 +96,10 @@ def main(raw_args=None):
     dic['values'] = values
     dic['rows'] = rows
     dic['cols'] = cols
-    path = 'data/test_{}_rmsd_{}_neighbors.pkl'.format(test_dim,
-                                                       nb_kept_values)
+    path = 'data/test_{}_rmsd_{}_neigh_id_{}_{}.json'.format(test_dim,
+                                                             nb_kept_values,
+                                                             args.id_worker,
+                                                             args.num_workers)
     with open(path, 'wb') as f:
         json.dump(dic, f)
     print('time taken to save json ',
