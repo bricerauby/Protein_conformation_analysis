@@ -35,6 +35,19 @@ class RmsdCalculator(object):
         return values, rows, cols
 
 
+def tocsr(I, J, E, N):
+    n = len(I)
+    K = np.empty((n,), dtype=np.int64)
+    K.view(np.int32).reshape(n, 2).T[...] = J, I
+    S = np.argsort(K)
+    KS = K[S]
+    steps = np.flatnonzero(np.r_[1, np.diff(KS)])
+    ED = np.add.reduceat(E[S], steps)
+    JD, ID = KS[steps].view(np.int32).reshape(-1, 2).T
+    ID = np.searchsorted(ID, np.arange(N+1))
+    return sps.csr_matrix((ED, np.array(JD, dtype=int), ID), (N, N))
+
+
 def main(raw_args=None):
     """
     Main function to compute the rmsd matrix. Can either take the raw_args
@@ -84,9 +97,13 @@ def main(raw_args=None):
     values, rows, cols = res
 
     print('time taken for rmsd computation', time.time() - start_time)
+
     start_time = time.time()
-    rmsds = sps.coo_matrix((values, (rows, cols)))
-    print('time taken for covnersion to sparse', time.time() - start_time)
+    rmsds = sps.coo_matrix((values, (rows, cols)), [test_dim, test_dim])
+    print('time taken for covnersion to sparse shape ',
+          time.time() - start_time)
+
+
     path = 'data/test_{}_rmsd_{}_neighbors.npz'.format(test_dim,
                                                        nb_kept_values)
     start_time = time.time()
