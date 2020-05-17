@@ -43,8 +43,8 @@ def main(raw_args=None):
     confs = align_array(coor_atom[:test_dim], 'atom')
     conf_obj = Conformations(confs, 'atom', 10)
     start = time.time()
-    rows, cols = np.array([], dtype=int), np.array([], dtype=int)
-    values = np.array([], dtype='float32')
+    rows, cols = [], []
+    values = []
     for ref_idx in range(test_dim):
         if ref_idx % 100 == 0:
             print(ref_idx)
@@ -55,9 +55,10 @@ def main(raw_args=None):
         cols_to_keep = np.argsort(rmsd_to_ref)[:nb_kept_values]
         values_to_keep = rmsd_to_ref[cols_to_keep]
 
-        rows = np.concatenate([rows,  idx_to_keep])
-        cols = np.concatenate([cols, cols_to_keep])
-        values = np.concatenate([values, values_to_keep])
+        rows += idx_to_keep
+        values += values_to_keep.tolist()
+        cols += cols_to_keep.tolist()
+
     print('time taken', time.time() - start)
     rmsds = sps.coo_matrix((values, (rows, cols)))
     path = 'data/test_{}_rmsd_{}_neighbors.npz'.format(test_dim,
