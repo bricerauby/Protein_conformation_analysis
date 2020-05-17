@@ -83,12 +83,15 @@ def main(raw_args=None):
     res = rmsd_calculator.compute_rmsd_mat_list(range(test_dim))
     values, rows, cols = res
 
-    print('time taken', time.time() - start_time)
+    print('time taken for rmsd computation', time.time() - start_time)
+    start_time = time.time()
     rmsds = sps.coo_matrix((values, (rows, cols)))
+    print('time taken for covnersion to sparse', time.time() - start_time)
     path = 'data/test_{}_rmsd_{}_neighbors.npz'.format(test_dim,
                                                        nb_kept_values)
-    sps.save_npz(path, rmsds)
-
+    start_time = time.time()
+    sps.save_npz(path, rmsds, compressed=False)
+    print('time taken for saving', time.time() - start_time)
     return
 
 
