@@ -34,11 +34,11 @@ if __name__ == '__main__':
         gc.collect()
         print('time taken for iteration {}'.format(id),
               time.time() - start_iteration)
+        np.save('data/neighbors.npy', neighbors)
     print('time taken', time.time() - start_time)
 
-    print("neighbors shape", neighbors.shape())
+    print("neighbors shape", neighbors.shape
     print(neighbors[5, 60:70])
     print(neighbors[10000, 60:70])
     print(neighbors[500000, 60:70])
     print(neighbors[1000000, 60:70])
-    np.save('data/neighbors', neighbors)
