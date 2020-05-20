@@ -27,9 +27,12 @@ def main(raw_args=None):
     clusters,_ = tomato(points=None, k=args.k, n_clusters=7, rmsd_path=args.rmsd_path)
     end = time.time()
     print('Tomato computation took {} seconds'.format(end-start))
-    plt.scatter(dihedral_coor_array[:,0], dihedral_coor_array[:,1], c=clusters,
+    plt.scatter(dihedral_coor_array[:clusters.shape[0],0], dihedral_coor_array[:clusters.shape[0],1], c=clusters,
                 s=0.5, alpha=0.5)
+    name = args.rmsd_path.split('/')[-1].split('.')[0]
+    plt.savefig('data/tomato_on_{}.png'.format(name))
     plt.show()
+    np.save('data/clusters_tomato_on_{}'.format(name), clusters)
 
 if __name__ == '__main__':
     print('python script has started')

@@ -1,5 +1,7 @@
 from functools import lru_cache
 
+import time
+import json
 import numpy as np
 import scipy.sparse as sps
 from numba import njit
@@ -115,21 +117,41 @@ def tomato(
     if rmsd_path=='':
         distances, neighbors = NearestNeighbors(n_neighbors=k).fit(points).kneighbors()
     else:
-        rmsd = sps.load_npz(rmsd_path)
-        distances, keys, neighbors = rmsd.data, rmsd.row, rmsd.col
+        extension = rmsd_path[-4:]
+        if extension=='.npz':
+            rmsd = sps.load_npz(rmsd_path)
+            distances, keys, neighbors = rmsd.data, rmsd.row, rmsd.col
+        elif extension=='json':
+            start = time.time()
+            with open(rmsd_path) as json_file:
+                rmsd_file = json.load(json_file)
+            
+            keys, distances, neighbors = rmsd_file['rows'], rmsd_file['values'], rmsd_file['cols']
+            keys, distances, neighbors = np.array(keys), np.array(distances), np.array(neighbors)
+            
+            stop1 = time.time()
+            print('Loading json took {:.3f} seconds'.format(stop1-start))
+
         nb_neighbors = len(keys[keys==0])
-
         neighbors = neighbors.reshape(-1,nb_neighbors)
-        neighbors = np.concatenate([np.array([k for k in range(nb_neighbors)]).reshape(-1,1), neighbors], axis=1)
-
         distances = distances.reshape(-1,nb_neighbors)
-        distances = np.concatenate([np.array([0 for _ in range(distances.shape[0])]).reshape(-1,1), neighbors], axis=1)
+        stop2 = time.time()
+        print('Reshaping took {:.3f} seconds'.format(stop2-stop1))
+        neighbors = np.concatenate([np.array([elt for elt in range(distances.shape[0])]).reshape(-1,1), neighbors], axis=1)
+        distances = np.concatenate([np.array([0 for _ in range(distances.shape[0])]).reshape(-1,1), distances], axis=1)
+        stop3 = time.time()
+        print('Concatenating took {:.3f} seconds'.format(stop3-stop2))
 
         if k is not None:
             neighbors, distances = neighbors[:,:k], distances[:,:k]
 
     density = ((distances ** 2).mean(axis=-1) + 1e-10) ** -0.5
+    stop4 = time.time()
+    print('Density computation took {:.3f} seconds.'.format(stop4-stop3))
+    print(density.shape)
     pre = _tomato_pre(density, neighbors)
+    stop5 = time.time()
+    print('_tomato_pre computation took {:.3f} seconds.'.format(stop5-stop4))
 
     if tau is not None:
         if relative_tau:
