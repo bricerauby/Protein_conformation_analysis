@@ -30,6 +30,7 @@ if __name__ == '__main__':
                 print(x)
                 print(y)
                 print(neigh)
+            current_row = x
         break
         #keys, distances, neigh = rmsd_file['rows'], rmsd_file['values'], rmsd_file['cols']
         # #keys, distances, neigh = np.array(keys), np.array(distances), np.array(neigh)
