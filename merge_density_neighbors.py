@@ -17,7 +17,6 @@ if __name__ == '__main__':
             id)
         with open(rmsd_path) as json_file:
             rmsd_file = json.load(json_file)
-        start_time = time.time()
         current_row = -1
         y = 0
         for current_index in range(len(rmsd_file['cols'])):
@@ -37,7 +36,7 @@ if __name__ == '__main__':
         np.save('data/neighbors.npy', neighbors)
     print('time taken', time.time() - start_time)
 
-    print("neighbors shape", neighbors.shape
+    print("neighbors shape", neighbors.shape)
     print(neighbors[5, 60:70])
     print(neighbors[10000, 60:70])
     print(neighbors[500000, 60:70])
