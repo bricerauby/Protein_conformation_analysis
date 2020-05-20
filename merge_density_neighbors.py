@@ -16,17 +16,17 @@ if __name__ == '__main__':
             rmsd_file = json.load(json_file)
         start_time = time.time()
         current_row = -1
+        y = 0
         for current_index in range(len(rmsd_file['cols'])):
 
             x = rmsd_file['rows'][current_index]
             neigh = int(rmsd_file['cols'][current_index])
             if current_row == x - 1:
                 y = 0
-            else:
+            elif current_row == x:
                 y += 1
             neighbors[x, y] = neigh
             if current_index < 5:
-                print(neighbors.dtype)
                 print(x)
                 print(y)
                 print(neigh)
