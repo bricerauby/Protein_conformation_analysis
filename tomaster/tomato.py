@@ -78,6 +78,8 @@ def tomato(
     relative_tau: bool = True,
     keep_cluster_labels: bool = False,
     rmsd_path='',
+    density_path='',
+    neighbors_path='',
 ):
     """ToMATo clustering
 
@@ -97,7 +99,14 @@ def tomato(
     keep_cluster_labels : bool
         If False, converts the labels to make them contiguous and start from 0.
     rmsd_path : str
-        If '', computes the euclidean distance to the nearest neighbors using sklearn. Else, recover the rmsd matrix as dstance from the given path.
+        If '', computes the euclidean distance to the nearest neighbors using sklearn.
+        Else, recover the rmsd matrix as distance from the given path.
+    density_path : str
+        If '', and rmsd_path is also '' : computes the euclidean distance to the nearest neighbors using sklearn.
+        Elif '', and rmsd_path is not '' : computes the density matrix out of the rmsd one.
+        Else, recover the density matrix from the given path.
+    neighbors_path : str
+        Same as density_path
 
     Returns
     -------
@@ -116,7 +125,7 @@ def tomato(
 
     if rmsd_path=='':
         distances, neighbors = NearestNeighbors(n_neighbors=k).fit(points).kneighbors()
-    else:
+    elif density_path=='':
         extension = rmsd_path[-4:]
         if extension=='.npz':
             rmsd = sps.load_npz(rmsd_path)
@@ -125,10 +134,10 @@ def tomato(
             start = time.time()
             with open(rmsd_path) as json_file:
                 rmsd_file = json.load(json_file)
-            
+
             keys, distances, neighbors = rmsd_file['rows'], rmsd_file['values'], rmsd_file['cols']
             keys, distances, neighbors = np.array(keys), np.array(distances), np.array(neighbors)
-            
+
             stop1 = time.time()
             print('Loading json took {:.3f} seconds'.format(stop1-start))
 
@@ -145,7 +154,11 @@ def tomato(
         if k is not None:
             neighbors, distances = neighbors[:,:k], distances[:,:k]
 
-    density = ((distances ** 2).mean(axis=-1) + 1e-10) ** -0.5
+    if density_path=='':
+        density = ((distances ** 2).mean(axis=-1) + 1e-10) ** -0.5
+    else:
+        density = np.load(density_path)
+        neighbors = np.load(neighbors_path)
     stop4 = time.time()
     print('Density computation took {:.3f} seconds.'.format(stop4-stop3))
     print(density.shape)
