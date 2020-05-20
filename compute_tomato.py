@@ -16,6 +16,7 @@ def main(raw_args=None):
 
     args = parser.parse_args(raw_args)
 
+    # Load the projected dataset to plot the cluster results and visualize them easily
     filename = "data/dihedral.xyz"
     coordinates = []
     xyz = open(filename)
