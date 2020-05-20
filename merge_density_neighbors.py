@@ -6,7 +6,7 @@ if __name__ == '__main__':
     neighbors = []
     nb_neighbors = 1000
     len_dataset = 1420738
-    neighbors = np.zeros((len_dataset, nb_neighbors), dtype=np.float32)
+    neighbors = np.zeros((len_dataset, nb_neighbors), dtype=np.uint8)
 
     start_time = time.time()
     for id in range(10):
@@ -15,12 +15,22 @@ if __name__ == '__main__':
         with open(rmsd_path) as json_file:
             rmsd_file = json.load(json_file)
         start_time = time.time()
+        current_row = -1
         for current_index in range(len(rmsd_file['cols'])):
-            x = rmsd_file['rows'][current_index]
-            y = rmsd_file['cols'][current_index]
-            neighbors[x, y] = 1
 
-        break 
+            x = rmsd_file['rows'][current_index]
+            neigh = int(rmsd_file['cols'][current_index])
+            if current_row == x - 1:
+                y = 0
+            else:
+                y += 1
+            neighbors[x, y] = neigh
+            if current_index < 5:
+                print(neighbors.dtype)
+                print(x)
+                print(y)
+                print(neigh)
+        break
         #keys, distances, neigh = rmsd_file['rows'], rmsd_file['values'], rmsd_file['cols']
         # #keys, distances, neigh = np.array(keys), np.array(distances), np.array(neigh)
         # neigh = np.array(rmsd_file['cols'])
