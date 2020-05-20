@@ -1,8 +1,8 @@
 import numpy as np
 import json
 import time
+
 if __name__ == '__main__':
-    #densities = []
     neighbors = []
     nb_neighbors = 1000
     len_dataset = 1420738
@@ -10,6 +10,7 @@ if __name__ == '__main__':
 
     start_time = time.time()
     for id in range(10):
+        start_iteration = time.time()
         rmsd_path = 'data/test_1420738_rmsd_1000_neigh_id_{}_10.json'.format(
             id)
         with open(rmsd_path) as json_file:
@@ -26,38 +27,15 @@ if __name__ == '__main__':
             elif current_row == x:
                 y += 1
             neighbors[x, y] = neigh
-            if current_index < 5:
-                print(x)
-                print(y)
-                print(neigh)
             current_row = x
-        break
-        #keys, distances, neigh = rmsd_file['rows'], rmsd_file['values'], rmsd_file['cols']
-        # #keys, distances, neigh = np.array(keys), np.array(distances), np.array(neigh)
-        # neigh = np.array(rmsd_file['cols'])
-        # del rmsd_file
 
-        # if id == 0:
-        #     nb_neighbors = len(keys[keys == 0])
-        # #neigh = neigh.reshape(-1,nb_neighbors)
-        # #distances = distances.reshape(-1,nb_neighbors)
-
-        # #neighbors = np.concatenate([np.array([elt for elt in range(distances.shape[0])]).reshape(-1,1), neighbors], axis=1)
-        # #distances = np.concatenate([np.array([0 for _ in range(distances.shape[0])]).reshape(-1,1), distances], axis=1)
-
-        # #density = ((distances ** 2).mean(axis=-1) + 1e-10) ** -0.5
-
-        # #densities += list(density)
-        # neighbors += list(neigh)
-
-        # print('{}/10 finished'.format(id+1))
-
+        print('time taken for iteration {}'.format(id),
+              time.time() - start_iteration)
     print('time taken', time.time() - start_time)
 
-    #densities = np.array(densities)
-    neighbors = neighbors.reshape(-1, nb_neighbors)
-    # neighbors = np.concatenate([np.array([elt for elt in range(neighbors.shape[0])]).reshape(-1, 1),
-    #                             neighbors], axis=1)
-
-    # np.save('data/densities',densities)
+    print("neighbors shape", neighbors.shape())
+    print(neighbors[5, 60:70])
+    print(neighbors[10000, 60:70])
+    print(neighbors[500000, 60:70])
+    print(neighbors[1000000, 60:70])
     np.save('data/neighbors', neighbors)
