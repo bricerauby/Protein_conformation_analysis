@@ -1,6 +1,8 @@
 import numpy as np
 import json
 import time
+import gc
+
 
 if __name__ == '__main__':
     neighbors = []
@@ -29,6 +31,7 @@ if __name__ == '__main__':
             neighbors[x, y] = neigh
             current_row = x
         del rmsd_file
+        gc.collect()
         print('time taken for iteration {}'.format(id),
               time.time() - start_iteration)
     print('time taken', time.time() - start_time)
