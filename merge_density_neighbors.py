@@ -15,7 +15,7 @@ if __name__ == '__main__':
         with open(rmsd_path) as json_file:
             rmsd_file = json.load(json_file)
         start_time = time.time()
-        for current_index in range(len(rmsd_file['cols']):
+        for current_index in range(len(rmsd_file['cols'])):
             x = rmsd_file['rows'][current_index]
             y = rmsd_file['cols'][current_index]
             neighbors[x, y] = 1
