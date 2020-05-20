@@ -28,7 +28,7 @@ if __name__ == '__main__':
                 y += 1
             neighbors[x, y] = neigh
             current_row = x
-
+        del rmsd_file
         print('time taken for iteration {}'.format(id),
               time.time() - start_iteration)
     print('time taken', time.time() - start_time)
