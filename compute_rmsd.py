@@ -15,8 +15,8 @@ class RmsdCalculator(object):
         rmsd_to_ref = self.conf_obj.rmsds_to_reference(self.conf_obj,
                                                        ref_idx)
         assert str(rmsd_to_ref.dtype) == 'float32'
-        idx_to_keep = [ref_idx]*self.nb_kept_values
-        cols_to_keep = np.argsort(rmsd_to_ref)[-self.nb_kept_values:]
+        idx_to_keep = [ref_idx] * self.nb_kept_values
+        cols_to_keep = np.argsort(rmsd_to_ref)[1:self.nb_kept_values + 1]
         values_to_keep = rmsd_to_ref[cols_to_keep]
         return idx_to_keep, cols_to_keep, values_to_keep
 
