@@ -8,7 +8,7 @@ if __name__ == '__main__':
     neighbors = []
     nb_neighbors = 1000
     len_dataset = 1420738
-    neighbors = np.zeros((len_dataset, nb_neighbors), dtype=np.uint8)
+    neighbors = np.zeros((len_dataset, nb_neighbors), dtype=np.uint32)
 
     start_time = time.time()
     for id in range(20):
@@ -34,8 +34,9 @@ if __name__ == '__main__':
         del rmsd_file
         gc.collect()
 
-        distances = distances.reshape(-1,nb_neighbors)
-        distances = np.concatenate([np.array([0 for _ in range(distances.shape[0])]).reshape(-1,1), distances], axis=1)
+        distances = distances.reshape(-1, nb_neighbors)
+        distances = np.concatenate([np.array(
+            [0 for _ in range(distances.shape[0])]).reshape(-1, 1), distances], axis=1)
         density = ((distances ** 2).mean(axis=-1) + 1e-10) ** -0.5
         densities += list(density)
 
@@ -46,6 +47,7 @@ if __name__ == '__main__':
     print('time taken', time.time() - start_time)
 
     print("neighbors shape", neighbors.shape)
+    print()
     print(neighbors[5, 60:70])
     print(neighbors[10000, 60:70])
     print(neighbors[500000, 60:70])
