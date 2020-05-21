@@ -1,14 +1,10 @@
 # Protein_conformation_analysis
 Mode-seeking for detecting metastable states in protein conformations
 
-### Installation
-    First, install the following two dependencies
-    - IRMSD (https://github.com/pandegroup/IRMSD)
-    - GUHDI (https://gudhi.inria.fr/)
-    Then you can install the dependencies with `pip -r requirements.txt`
-
-Because the RMSD matrix library is only compatible with python 2 we are a virtual environemment.
-### Compute RMSD matrix  
+### Compute RMSD matrix 
+Because the RMSD matrix library is only compatible with python 2 we created 2 virtual environemments. 
+The one for the RMSD matrix is using python 2.
+ 
     First install :
     - IRMSD (https://github.com/pandegroup/IRMSD)
     Then install the other dependencies :
@@ -17,9 +13,14 @@ Because the RMSD matrix library is only compatible with python 2 we are a virtua
     To run the computation of the rmsd matrix use :
     `python compute_rmsd.py --structure_file data/aladip_implicit.xyz --n_neigh 1000 --id_split 0 --num_workers 1`
 
-    Then to merge the densities and the neighbors (that are too heavy to be built directly), you can run : `python merge_density_neighbors.py`. This will create the neighbors and densities matrix required by the tomato algorithm later on.
+    Then to merge the densities and the neighbors (that are too heavy to be built directly), you can run : `python merge_density_neighbors.py`. This will create the neighbors and densities matrix required by the tomato algorithm later on. They are store as .npy file since it is lighter than a dictionnary. 
 
 ### Analysis
+For this part we used python 3 in an other environnement
+    First, install the following :
+    - GUHDI (https://gudhi.inria.fr/)
+    
+    Then you can install the dependencies with `pip -r requirements_3.txt`
 
 #### Get familiar with tomato parameters on a toy dataset
     In order to get a sense of the parameters and how the algorithm works, you can run the following commands from the main directory : `python toy_tomato.py`
