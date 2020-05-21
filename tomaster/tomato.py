@@ -126,30 +126,23 @@ def tomato(
     if rmsd_path=='':
         distances, neighbors = NearestNeighbors(n_neighbors=k).fit(points).kneighbors()
     elif density_path=='':
-        extension = rmsd_path[-4:]
-        if extension=='.npz':
+        extension = rmsd_path.split('.')[-1]
+        if extension=='npz':
             rmsd = sps.load_npz(rmsd_path)
             distances, keys, neighbors = rmsd.data, rmsd.row, rmsd.col
         elif extension=='json':
-            # start = time.time()
             with open(rmsd_path) as json_file:
                 rmsd_file = json.load(json_file)
 
             keys, distances, neighbors = rmsd_file['rows'], rmsd_file['values'], rmsd_file['cols']
             keys, distances, neighbors = np.array(keys), np.array(distances), np.array(neighbors)
 
-            # stop1 = time.time()
-            # print('Loading json took {:.3f} seconds'.format(stop1-start))
-
         nb_neighbors = len(keys[keys==0])
         neighbors = neighbors.reshape(-1,nb_neighbors)
         distances = distances.reshape(-1,nb_neighbors)
-        # stop2 = time.time()
-        # print('Reshaping took {:.3f} seconds'.format(stop2-stop1))
+
         neighbors = np.concatenate([np.array([elt for elt in range(distances.shape[0])]).reshape(-1,1), neighbors], axis=1)
         distances = np.concatenate([np.array([0 for _ in range(distances.shape[0])]).reshape(-1,1), distances], axis=1)
-        # stop3 = time.time()
-        # print('Concatenating took {:.3f} seconds'.format(stop3-stop2))
 
         if k is not None:
             neighbors, distances = neighbors[:,:k], distances[:,:k]
@@ -159,12 +152,8 @@ def tomato(
     else:
         density = np.load(density_path)
         neighbors = np.load(neighbors_path)
-    # stop4 = time.time()
-    # print('Density computation took {:.3f} seconds.'.format(stop4-stop3))
-    # print(density.shape)
+
     pre = _tomato_pre(density, neighbors)
-    # stop5 = time.time()
-    # print('_tomato_pre computation took {:.3f} seconds.'.format(stop5-stop4))
 
     if tau is not None:
         if relative_tau:
@@ -210,48 +199,3 @@ def tomato(
         return ans
     else:
         return ans, tau
-
-
-def tomato_img(
-    img: np.ndarray, *, spatial_weight: float = 0, lab_space: bool = True, **kwargs
-):
-    """ToMATo for images
-
-    Parameters
-    ----------
-
-    img : np.ndarray
-        Image of shape (h, w) or (h, w, 3)
-    spatial_weight : float
-        Importance of the pixel positions in the distance function
-    lab_space : bool
-        If True, converts color images to the CIE L*a*b color space (<https://en.wikipedia.org/wiki/CIELAB_color_space>)
-
-    see tomato() for other arguments.
-
-    Returns
-    -------
-
-    clusters : np.ndarray
-        Array of shape (h, w) containing the cluster indexes.
-    """
-    assert len(img.shape) in [2, 3]
-    if len(img.shape) == 3:
-        assert img.shape[2] in [1, 3]
-
-    img = img_as_float(img)
-
-    if len(img.shape) == 3 and lab_space:
-        img = rgb2lab(img)
-    else:
-        img = img[:, :, None]
-        img *= 100
-
-    ndims = img.shape[-1]
-    coords = np.indices(img.shape[:2], dtype=np.float32).reshape(2, -1).T
-    coords *= spatial_weight
-    points = np.concatenate((coords, img.reshape(-1, ndims)), 1)
-    ans = tomato(points, **kwargs)
-    if isinstance(ans, tuple):
-        ans = ans[0]
-    return ans.reshape(img.shape[:2])

@@ -91,11 +91,13 @@ def estimate_density(x, nbins=100, graph=False, fig_name=''):
 # Build the simplex tree and the corresponding filtration
 # neighbors refers to the neighboring graph of each element
 # graph is a boolean for data visualization
-def estimate_clusters(neighbors=6, graph=False, raw_args=None):
+def estimate_clusters(graph=False, raw_args=None):
 
     parser = argparse.ArgumentParser()
     parser.add_argument('--structure_file', default='',
                         type=str, help='path to the structure file')
+    parser.add_argument('--k', default=6,
+                        type=int, help='number of points in the neighborhood')
     parser.add_argument('--density_path', default='',
                         type=str, help='path to the density file')
     parser.add_argument('--neighbors_path', default='',
@@ -130,18 +132,19 @@ def estimate_clusters(neighbors=6, graph=False, raw_args=None):
         kdt = KDTree(x, metric='euclidean')
 
     elif args.density_path!='' and args.neighbors_path!='':
-        neigh = np.load(args.neighbors_path)
-        vec = np.load(args.density_path)
+        limit = 10000
+        neigh = np.load(args.neighbors_path)[:limit]
+        vec = np.load(args.density_path)[:limit]
 
     sxt = gudhi.SimplexTree()
 
     print('Building sxt...')
-    for ind in tqdm.tqdm(range(x.shape[0])):
+    for ind in tqdm.tqdm(range(vec.shape[0])):
         sxt.insert([ind], filtration=-vec[ind])
         if args.structure_file!='':
-            nei = kdt.query([x[ind]], neighbors, return_distance=False)[0][1:]
+            nei = kdt.query([x[ind]], args.k, return_distance=False)[0][1:]
         else:
-            nei = neigh[ind]
+            nei = neigh[ind, :args.k]
         for idx in nei:
             sxt.insert([ind, idx], filtration=np.mean([-vec[ind], -vec[idx]]))
 
@@ -166,4 +169,8 @@ def estimate_clusters(neighbors=6, graph=False, raw_args=None):
         plt.savefig('data/{}_pers_diag.png'.format(args.fig_name))
 
 if __name__ == '__main__':
-    estimate_clusters(graph=True)
+    start = time.time()
+    for _ in range(3):
+        estimate_clusters(graph=True)
+    end = time.time()
+    print('Computing the persistence diagram and saving files took {} seconds'.format((end-start)/3))

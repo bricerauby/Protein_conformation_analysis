@@ -1,9 +1,16 @@
+import os
 import numpy as np
 import matplotlib.pyplot as plt
 from tomaster import tomato
 
 if __name__=='__main__':
-    filename = "data/ToMATo/inputs/spiral_w_density.txt" # "dihedral.xyz"
+    parser = argparse.ArgumentParser()
+    parser.add_argument('--input_file', default='data/ToMATo/inputs/spiral_w_density.txt',
+                        type=str, help='path to the toy dataset')
+    parser.add_argument('--output_dir', default='data',
+                        type=str, help='output directory in which the plots will be saved')
+    args = parser.parse_args(raw_args)
+    filename = args.input_file
     spi_dens_cors = []
     xyz = open(filename)
     for line in xyz:
@@ -16,7 +23,7 @@ if __name__=='__main__':
     ### Visualize the original spiral data
     plt.figure(figsize=(12,6))
     plt.scatter(spi_dens_cors_arr[:,0], spi_dens_cors_arr[:,1], s=0.1, alpha=0.2)
-    plt.savefig('data/spiral_original.png')
+    plt.savefig(os.path.join(args.output_dir,'toy_original.png'))
 
 
     ### Play with the parameter k
@@ -28,7 +35,7 @@ if __name__=='__main__':
         plt.scatter(spi_dens_cors_arr.T[0], spi_dens_cors_arr.T[1], c=clusters, s=0.1, alpha=0.2)
         plt.title("Tomato with k={}".format(5+rank))
 
-    plt.savefig('data/spiral_param_k.png')
+    plt.savefig(os.path.join(args.output_dir,'toy_param_k.png'))
 
 
     ### Play with the parameter n_clusters
@@ -40,7 +47,7 @@ if __name__=='__main__':
         plt.scatter(spi_dens_cors_arr.T[0], spi_dens_cors_arr.T[1], c=clusters, s=0.1, alpha=0.2)
         plt.title("Tomato with n_clusters={}".format(2+rank))
 
-    plt.savefig('data/spiral_param_n_clusters.png')
+    plt.savefig(os.path.join(args.output_dir,'toy_param_n_clusters.png'))
 
 
     ### Play with the parameter tau
@@ -53,4 +60,4 @@ if __name__=='__main__':
                     s=0.1, alpha=0.2)
         plt.title("Tomato with tau={}".format(rank+5))
 
-    plt.savefig('data/spiral_param_tau.png')
+    plt.savefig(os.path.join(args.output_dir,'toy_param_tau.png'))
