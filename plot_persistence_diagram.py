@@ -1,5 +1,7 @@
+import time
 import argparse
 import numpy as np
+import tqdm
 from scipy.stats import gaussian_kde as kde
 import matplotlib.pyplot as plt
 import matplotlib.gridspec as gds
@@ -7,7 +9,7 @@ import gudhi
 from sklearn.decomposition import PCA
 from sklearn.neighbors import KDTree
 
-def plot_density(X, reduced, nbins, den, vec):
+def plot_density(X, reduced, nbins, den, vec, fig_name=''):
     x,y = reduced.T
 
     u,v = np.mgrid[x.min():x.max():nbins*1j, y.min():y.max():nbins*1j]
@@ -22,7 +24,7 @@ def plot_density(X, reduced, nbins, den, vec):
 
     plt.subplot(fig[0,0:2])
     plt.title('Data Scatter Plot')
-    plt.plot(x, y, 'ko')
+    plt.scatter(x, y, color='k', s=.5, alpha=.5)
     plt.xticks([])
     plt.yticks([])
     plt.subplot(fig[0,2:4])
@@ -58,11 +60,11 @@ def plot_density(X, reduced, nbins, den, vec):
     # ax1.set_zlabel('Density Value')
 
     plt.tight_layout()
-    plt.show()
+    plt.savefig('data/{}_scatter_density.png'.format(fig_name))
 
     del x, y, u, v, val
 
-def estimate_density(x, nbins=100, graph=False):
+def estimate_density(x, nbins=100, graph=False, fig_name=''):
 
     den = kde(x.T)
     vec = den(np.vstack(([*x.T])))
@@ -72,11 +74,13 @@ def estimate_density(x, nbins=100, graph=False):
         reduced = PCA(n_components=2).fit_transform(x)
         end = time.time()
         print('PCA finished : took {} seconds.'.format(end-start))
+    else:
+        reduced = x
 
     if graph:
         print('Start plot_density...')
         start = time.time()
-        plot_density(x, reduced, nbins, den, vec)
+        plot_density(x, reduced, nbins, den, vec, fig_name=fig_name)
         end = time.time()
         print('plot_density finished : took {} seconds.'.format(end-start))
 
@@ -96,7 +100,7 @@ def estimate_clusters(neighbors=6, graph=False, raw_args=None):
                         type=str, help='path to the density file')
     parser.add_argument('--neighbors_path', default='',
                         type=str, help='path to the neighbors file')
-    parser.add_argument('--fig_name', default='PD_500_000_data2D',
+    parser.add_argument('--fig_name', default='dihedral_500k',
                         type=str,
                         help='name to use to save the final persistence diagram figure')
     args = parser.parse_args(raw_args)
@@ -120,7 +124,7 @@ def estimate_clusters(neighbors=6, graph=False, raw_args=None):
         except:
             x = np.array(coordinates)
 
-        vec = estimate_density(x, graph=True)
+        vec = estimate_density(x, graph=True, fig_name=args.fig_name)
 
         kdt = KDTree(x, metric='euclidean')
 
@@ -158,8 +162,7 @@ def estimate_clusters(neighbors=6, graph=False, raw_args=None):
         plt.subplot(fig[0,1])
         gudhi.plot_persistence_barcode(res)
         plt.tight_layout()
-        plt.savefig('data/{}.png'.format(args.fig_name))
-        plt.show()
+        plt.savefig('data/{}_pers_diag.png'.format(args.fig_name))
 
 if __name__ == '__main__':
     estimate_clusters(graph=True)

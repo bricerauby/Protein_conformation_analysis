@@ -1,7 +1,7 @@
 import numpy as np
 import matplotlib.pyplot as plt
 
-if __name__=='main':
+if __name__=='__main__':
     filename = "data/aladip_implicit.xyz" # "data/dihedral.xyz"
     coordinates = []
     xyz = open(filename)

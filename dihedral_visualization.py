@@ -2,7 +2,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 from tomaster import tomato
 
-if __name__=='main':
+if __name__=='__main__':
     filename = "data/dihedral.xyz"
     dihedral_coordinates = []
     xyz = open(filename)

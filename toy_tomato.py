@@ -2,7 +2,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 from tomaster import tomato
 
-if __name__=='main':
+if __name__=='__main__':
     filename = "data/ToMATo/inputs/spiral_w_density.txt" # "dihedral.xyz"
     spi_dens_cors = []
     xyz = open(filename)
