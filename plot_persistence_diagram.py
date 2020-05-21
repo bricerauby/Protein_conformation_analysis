@@ -90,8 +90,8 @@ def estimate_clusters(neighbors=6, graph=False, raw_args=None):
     parser = argparse.ArgumentParser()
     parser.add_argument('--structure_file', default='',
                         type=str, help='path to the structure file')
-    parser.add_argument('--distance_path', default='',
-                        type=str, help='path to the distance file')
+    parser.add_argument('--density_path', default='',
+                        type=str, help='path to the density file')
     parser.add_argument('--neighbors_path', default='',
                         type=str, help='path to the neighbors file')
     args = parser.parse_args(raw_args)
@@ -112,11 +112,9 @@ def estimate_clusters(neighbors=6, graph=False, raw_args=None):
 
         kdt = KDTree(x, metric='euclidean')
 
-    elif args.distance_path!='' and args.neighbors_path!='':
+    elif args.density_path!='' and args.neighbors_path!='':
         neighbors = np.load(args.neighbors_path)
-        distances = np.load(args.distance_path)
-        den = ((distances ** 2).mean(axis=-1) + 1e-10) ** -0.5
-        vec = den(np.vstack(([*x.T])))
+        density = np.load(args.density_path)
 
     sxt = gudhi.SimplexTree()
 
