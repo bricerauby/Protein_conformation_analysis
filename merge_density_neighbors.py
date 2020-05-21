@@ -58,8 +58,8 @@ if __name__ == '__main__':
 
         print('time taken for iteration {}'.format(id),
               time.time() - start_iteration)
-        np.save(os.path.join(args.output_dir,'densities.npy', densities))
-        np.save(os.path.join(args.output_dir,'neighbors.npy', neighbors))
+        np.save(os.path.join(args.output_dir, 'densities.npy'), densities)
+        np.save(os.path.join(args.output_dir, 'neighbors.npy'), neighbors)
     print('time taken', time.time() - start_time)
 
     print("neighbors shape", neighbors.shape)
