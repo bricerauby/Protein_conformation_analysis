@@ -4,17 +4,33 @@ import time
 import gc
 
 if __name__ == '__main__':
+    parser = argparse.ArgumentParser()
+    parser.add_argument('--n_points', default=1420738,
+                        type=int, help='number of points to considered in case'
+                        ' of a reduce dataset the distance on')
+    parser.add_argument('--n_neigh', default=1000,
+                        type=int, help='number of closest neighbor to save')
+    parser.add_argument('--num_splits', default=20,
+                        type=int, help='number of json files to merge')
+    parser.add_argument('--input_file', default='data/dihedral.xyz',
+                        type=str, help='path to the toy dataset')
+    parser.add_argument('--output_dir', default='data',
+                        type=str, help='output directory in which the plots will be saved')
+    args = parser.parse_args()
     densities = []
     neighbors = []
-    nb_neighbors = 1000
-    len_dataset = 1420738
+    nb_neighbors = args.n_neigh
+    len_dataset = args.n_points
     neighbors = np.zeros((len_dataset, nb_neighbors), dtype=np.uint32)
 
     start_time = time.time()
-    for id in range(20):
+    for id in range(args.num_splits):
         start_iteration = time.time()
-        rmsd_path = 'data/test_1420738_rmsd_1000_neigh_id_{}_20.json'.format(
-            id)
+        path = 'test_{}_rmsd_{}_neigh_id_{}_{}.json'.format(args.n_points,
+                                                            args.n_neigh,
+                                                            id,
+                                                            args.num_splits)
+        rmsd_path = os.path.join(args.output_dir, path)
         with open(rmsd_path) as json_file:
             rmsd_file = json.load(json_file)
         current_row = -1
@@ -42,8 +58,8 @@ if __name__ == '__main__':
 
         print('time taken for iteration {}'.format(id),
               time.time() - start_iteration)
-        np.save('data/densities.npy', densities)
-        np.save('data/neighbors.npy', neighbors)
+        np.save(os.path.join(args.output_dir,'densities.npy', densities))
+        np.save(os.path.join(args.output_dir,'neighbors.npy', neighbors))
     print('time taken', time.time() - start_time)
 
     print("neighbors shape", neighbors.shape)

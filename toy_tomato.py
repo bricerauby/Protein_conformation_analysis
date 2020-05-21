@@ -1,4 +1,5 @@
 import os
+import argparse
 import numpy as np
 import matplotlib.pyplot as plt
 from tomaster import tomato
@@ -9,7 +10,7 @@ if __name__=='__main__':
                         type=str, help='path to the toy dataset')
     parser.add_argument('--output_dir', default='data',
                         type=str, help='output directory in which the plots will be saved')
-    args = parser.parse_args(raw_args)
+    args = parser.parse_args()
     filename = args.input_file
     spi_dens_cors = []
     xyz = open(filename)

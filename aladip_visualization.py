@@ -1,8 +1,15 @@
+import argparse
 import numpy as np
 import matplotlib.pyplot as plt
 
 if __name__=='__main__':
-    filename = "data/aladip_implicit.xyz" # "data/dihedral.xyz"
+    parser = argparse.ArgumentParser()
+    parser.add_argument('--input_file', default='data/aladip_implicit.xyz',
+                        type=str, help='path to the toy dataset')
+    parser.add_argument('--output_dir', default='data',
+                        type=str, help='output directory in which the plots will be saved')
+    args = parser.parse_args()
+    filename = args.input_file
     coordinates = []
     xyz = open(filename)
     for line in xyz:
@@ -20,7 +27,7 @@ if __name__=='__main__':
         plt.scatter(coor_array[conf_nb,:,0],coor_array[conf_nb,:,1])
         plt.title('Conformation # : {}'.format(conf_nb))
         plt.axis('off')
-    plt.savefig('data/example_conformations.png')
+    plt.savefig(os.path.join(args.output_dir,'example_conformations.png'))
 
 
     ### Visualize atom spread
@@ -34,7 +41,7 @@ if __name__=='__main__':
                    c=cdict[col], label='Atom # {}'.format(col), s=1.5, alpha=1.0)
     ax.legend()
     plt.axis('off');
-    plt.savefig('data/atom_spread.png')
+    plt.savefig(os.path.join(args.output_dir,'atom_spread.png'))
     # for idx in range(10):
     #     print("Standard deviation for atom {} along each axis are : ({:.3f},{:.3f},{:.3f})".format(idx,
     #                             np.std(coor_array[:conf_nb,:,0].reshape(-1)[idx::10]),
