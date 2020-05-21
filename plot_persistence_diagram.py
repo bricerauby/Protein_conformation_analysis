@@ -113,8 +113,8 @@ def estimate_clusters(neighbors=6, graph=False, raw_args=None):
         kdt = KDTree(x, metric='euclidean')
 
     elif args.density_path!='' and args.neighbors_path!='':
-        neighbors = np.load(args.neighbors_path)
-        density = np.load(args.density_path)
+        neigh = np.load(args.neighbors_path)
+        vec = np.load(args.density_path)
 
     sxt = gudhi.SimplexTree()
 
@@ -124,7 +124,7 @@ def estimate_clusters(neighbors=6, graph=False, raw_args=None):
         if args.structure_file!='':
             nei = kdt.query([x[ind]], neighbors, return_distance=False)[0][1:]
         else:
-            nei =
+            nei = neigh[ind]
         for idx in nei:
             sxt.insert([ind, idx], filtration=np.mean([-vec[ind], -vec[idx]]))
 
