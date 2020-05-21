@@ -1,3 +1,5 @@
+import argparse
+import numpy as np
 from scipy.stats import gaussian_kde as kde
 import matplotlib.pyplot as plt
 import matplotlib.gridspec as gds
@@ -105,11 +107,18 @@ def estimate_clusters(neighbors=6, graph=False, raw_args=None):
         coordinates = []
         xyz = open(args.structure_file)
         for line in xyz:
-            x, y, z = line.split()
-            coordinates.append([float(x), float(y), float(z)])
+            try:
+                x, y, z = line.split()
+                coordinates.append([float(x), float(y), float(z)])
+            except:
+                x, y = line.split()
+                coordinates.append([float(x), float(y)])
         xyz.close()
 
-        x = np.array(coordinates).reshape(-1, 10, 3)
+        try:
+            x = np.array(coordinates).reshape(-1, 10, 3)
+        except:
+            x = np.array(coordinates)
 
         vec = estimate_density(x, graph=True)
 
