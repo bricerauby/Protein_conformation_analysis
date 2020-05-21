@@ -5,6 +5,7 @@ import argparse
 import matplotlib.pyplot as plt
 from tomaster import tomato
 
+
 def main(raw_args=None):
 
     parser = argparse.ArgumentParser()
@@ -21,16 +22,18 @@ def main(raw_args=None):
     parser.add_argument('--input_file', default='data/dihedral.xyz',
                         type=str, help='path to the 2D dataset')
     parser.add_argument('--output_dir', default='data',
-                        type=str, help='output directory in which the plots will be saved')
+                        type=str, help='output directory in which the'
+                        ' plots will be saved')
 
     args = parser.parse_args(raw_args)
 
-    # Load the projected dataset to plot the cluster results and visualize them easily
+    # Load the projected dataset to plot the cluster results and
+    # visualize them easily
     filename = args.input_file
     coordinates = []
     xyz = open(filename)
     for line in xyz:
-        x,y = line.split()
+        x, y = line.split()
         coordinates.append([float(x), float(y)])
     xyz.close()
     dihedral_coor_array = np.array(coordinates)
@@ -42,12 +45,15 @@ def main(raw_args=None):
                          neighbors_path=args.neighbors_path)
     end = time.time()
     print('Tomato computation took {} seconds'.format(end-start))
-    plt.scatter(dihedral_coor_array[:clusters.shape[0],0], dihedral_coor_array[:clusters.shape[0],1], c=clusters,
+    plt.scatter(dihedral_coor_array[:clusters.shape[0], 0],
+                dihedral_coor_array[:clusters.shape[0], 1], c=clusters,
                 s=0.5, alpha=0.5)
     name = args.rmsd_path.split('/')[-1].split('.')[0]
-    plt.savefig(os.path.join(args.output_dir,'tomato_on_{}.png'.format(name)))
+    plt.savefig(os.path.join(args.output_dir, 'tomato_on_{}.png'.format(name)))
 
-    np.save(os.path.join(args.output_dir,'clusters_tomato_on_{}'.format(name), clusters))
+    np.save(os.path.join(args.output_dir, 'clusters_tomato_on_{}'.format(name),
+                         clusters))
+
 
 if __name__ == '__main__':
     print('python script has started')

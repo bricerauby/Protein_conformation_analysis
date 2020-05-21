@@ -15,7 +15,8 @@ if __name__ == '__main__':
     parser.add_argument('--num_splits', default=20,
                         type=int, help='number of json files to merge')
     parser.add_argument('--output_dir', default='data',
-                        type=str, help='output directory in which the plots will be saved')
+                        type=str, help='output directory in which the '
+                        'plots will be saved')
     args = parser.parse_args()
     densities = []
     neighbors = []
@@ -52,7 +53,8 @@ if __name__ == '__main__':
 
         distances = distances.reshape(-1, nb_neighbors)
         distances = np.concatenate([np.array(
-            [0 for _ in range(distances.shape[0])]).reshape(-1, 1), distances], axis=1)
+            [0 for _ in range(distances.shape[0])]).reshape(-1, 1), distances],
+            axis=1)
         density = ((distances ** 2).mean(axis=-1) + 1e-10) ** -0.5
         densities += list(density)
 

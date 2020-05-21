@@ -17,7 +17,7 @@ def plot_density(X, reduced, nbins, den, vec, fig_name=''):
     # In if original data dimention > 2, the vizualization will show the
     # density over the reduced (2D) representation of the data calculated by
     # PCA. Otherwise, reduced is equal to original data
-    # TODO: Change to use original density function
+
     val = kde(reduced.T)(np.vstack([u.flatten(), v.flatten()]))
 
     plt.figure(figsize=(18, 10))
