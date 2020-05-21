@@ -51,7 +51,7 @@ def main(raw_args=None):
     name = args.rmsd_path.split('/')[-1].split('.')[0]
     plt.savefig(os.path.join(args.output_dir, 'tomato_on_{}.png'.format(name)))
 
-    np.save(os.path.join(args.output_dir, 'clusters_tomato_on_{}'.format(name),
+    np.save(os.path.join(args.output_dir, 'clusters_tomato_on_{}'.format(name)),
                          clusters))
 
 
