@@ -94,6 +94,9 @@ def estimate_clusters(neighbors=6, graph=False, raw_args=None):
                         type=str, help='path to the density file')
     parser.add_argument('--neighbors_path', default='',
                         type=str, help='path to the neighbors file')
+    parser.add_argument('--fig_name', default='PD_500_000_data2D',
+                        type=str,
+                        help='name to use to save the final persistence diagram figure')
     args = parser.parse_args(raw_args)
     #err = 'You should provide a structure_file'
     #assert args.structure_file is not None, err
@@ -146,6 +149,7 @@ def estimate_clusters(neighbors=6, graph=False, raw_args=None):
         plt.subplot(fig[0,1])
         gudhi.plot_persistence_barcode(res)
         plt.tight_layout()
+        plt.savefig('data/{}.png'.format(args.fig_name))
         plt.show()
 
 if __name__ == '__main__':
