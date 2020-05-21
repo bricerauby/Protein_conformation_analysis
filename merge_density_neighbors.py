@@ -2,6 +2,8 @@ import numpy as np
 import json
 import time
 import gc
+import argparse
+import os
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()
@@ -12,8 +14,6 @@ if __name__ == '__main__':
                         type=int, help='number of closest neighbor to save')
     parser.add_argument('--num_splits', default=20,
                         type=int, help='number of json files to merge')
-    parser.add_argument('--input_file', default='data/dihedral.xyz',
-                        type=str, help='path to the toy dataset')
     parser.add_argument('--output_dir', default='data',
                         type=str, help='output directory in which the plots will be saved')
     args = parser.parse_args()
