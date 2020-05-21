@@ -9,32 +9,34 @@ import gudhi
 from sklearn.decomposition import PCA
 from sklearn.neighbors import KDTree
 
-def plot_density(X, reduced, nbins, den, vec, fig_name=''):
-    x,y = reduced.T
 
-    u,v = np.mgrid[x.min():x.max():nbins*1j, y.min():y.max():nbins*1j]
+def plot_density(X, reduced, nbins, den, vec, fig_name=''):
+    x, y = reduced.T
+
+    u, v = np.mgrid[x.min():x.max():nbins*1j, y.min():y.max():nbins*1j]
     # In if original data dimention > 2, the vizualization will show the
-    # density over the reduced (2D) representation of the data calculated by PCA
-    # Otherwise, reduced is equal to original data
-    #TODO: Change to use original density function
+    # density over the reduced (2D) representation of the data calculated by
+    # PCA. Otherwise, reduced is equal to original data
+    # TODO: Change to use original density function
     val = kde(reduced.T)(np.vstack([u.flatten(), v.flatten()]))
 
     plt.figure(figsize=(18, 10))
     fig = gds.GridSpec(3, 6)
 
-    plt.subplot(fig[0,0:2])
+    plt.subplot(fig[0, 0:2])
     plt.title('Data Scatter Plot')
     plt.scatter(x, y, color='k', s=.5, alpha=.5)
     plt.xticks([])
     plt.yticks([])
-    plt.subplot(fig[0,2:4])
+    plt.subplot(fig[0, 2:4])
     plt.title('Gaussian KDE')
     plt.pcolormesh(u, v, val.reshape(u.shape), cmap=plt.cm.BuGn_r)
     plt.xticks([])
     plt.yticks([])
-    plt.subplot(fig[0,4:6])
+    plt.subplot(fig[0, 4:6])
     plt.title('Density Contours')
-    plt.pcolormesh(u, v, val.reshape(u.shape), cmap=plt.cm.BuGn_r, shading='gouraud')
+    plt.pcolormesh(u, v, val.reshape(u.shape),
+                   cmap=plt.cm.BuGn_r, shading='gouraud')
     plt.contour(u, v, val.reshape(u.shape))
     plt.xticks([])
     plt.yticks([])
@@ -64,11 +66,12 @@ def plot_density(X, reduced, nbins, den, vec, fig_name=''):
 
     del x, y, u, v, val
 
+
 def estimate_density(x, nbins=100, graph=False, fig_name=''):
 
     den = kde(x.T)
     vec = den(np.vstack(([*x.T])))
-    if (x.shape[1]>2):
+    if (x.shape[1] > 2):
         print('Start PCA...')
         start = time.time()
         reduced = PCA(n_components=2).fit_transform(x)
@@ -106,10 +109,10 @@ def estimate_clusters(graph=False, raw_args=None):
                         type=str,
                         help='name to use to save the final persistence diagram figure')
     args = parser.parse_args(raw_args)
-    #err = 'You should provide a structure_file'
-    #assert args.structure_file is not None, err
+    # err = 'You should provide a structure_file'
+    # assert args.structure_file is not None, err
 
-    if args.structure_file!='':
+    if args.structure_file != '':
         coordinates = []
         xyz = open(args.structure_file)
         for line in xyz:
@@ -127,7 +130,7 @@ def estimate_clusters(graph=False, raw_args=None):
             x = np.array(coordinates)
 
         vec = estimate_density(x, graph=True, fig_name=args.fig_name)
-        np.save('data/vec_test',vec)
+        np.save('data/vec_test', vec)
 
         kdt = KDTree(x, metric='euclidean')
 
@@ -161,12 +164,13 @@ def estimate_clusters(graph=False, raw_args=None):
 
         plt.figure(figsize=(18, 4))
         fig = gds.GridSpec(1, 2)
-        plt.subplot(fig[0,0])
+        plt.subplot(fig[0, 0])
         gudhi.plot_persistence_diagram(res)
-        plt.subplot(fig[0,1])
+        plt.subplot(fig[0, 1])
         gudhi.plot_persistence_barcode(res)
         plt.tight_layout()
         plt.savefig('data/{}_pers_diag.png'.format(args.fig_name))
+
 
 if __name__ == '__main__':
     start = time.time()
