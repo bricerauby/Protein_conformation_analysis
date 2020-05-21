@@ -125,6 +125,7 @@ def estimate_clusters(neighbors=6, graph=False, raw_args=None):
             x = np.array(coordinates)
 
         vec = estimate_density(x, graph=True, fig_name=args.fig_name)
+        np.save('data/vec_test',vec)
 
         kdt = KDTree(x, metric='euclidean')
 
