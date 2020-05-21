@@ -135,9 +135,9 @@ def estimate_clusters(graph=False, raw_args=None):
         kdt = KDTree(x, metric='euclidean')
 
     elif args.density_path!='' and args.neighbors_path!='':
-        limit = 10000
-        neigh = np.load(args.neighbors_path)[:limit]
-        vec = np.load(args.density_path)[:limit]
+        #limit = 10000
+        neigh = np.load(args.neighbors_path)#[:limit]
+        vec = np.load(args.density_path)#[:limit]
 
     sxt = gudhi.SimplexTree()
 
