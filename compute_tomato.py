@@ -9,8 +9,8 @@ def main(raw_args=None):
     parser = argparse.ArgumentParser()
     parser.add_argument('--rmsd_path', default='',
                         type=str, help='path to the rmsd file')
-    parser.add_argument('--density_path', default='',
-                        type=str, help='path to the density file directly')
+    parser.add_argument('--distance_path', default='',
+                        type=str, help='path to the distance file directly')
     parser.add_argument('--neighbors_path', default='',
                         type=str, help='path to the neighbors file directly')
     parser.add_argument('--k', default=None,
@@ -31,7 +31,7 @@ def main(raw_args=None):
     start = time.time()
     clusters,_ = tomato(points=None, k=args.k, n_clusters=7,
                         rmsd_path=args.rmsd_path,
-                        density_path=args.density_path,
+                        distance_path=args.distance_path,
                         neighbors_path=args.neighbors_path)
     end = time.time()
     print('Tomato computation took {} seconds'.format(end-start))

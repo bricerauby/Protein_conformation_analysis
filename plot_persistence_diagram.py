@@ -88,30 +88,45 @@ def estimate_density(x, nbins=100, graph=False):
 def estimate_clusters(neighbors=6, graph=False, raw_args=None):
 
     parser = argparse.ArgumentParser()
-    parser.add_argument('--structure_file', default=None,
+    parser.add_argument('--structure_file', default='',
                         type=str, help='path to the structure file')
+    parser.add_argument('--distance_path', default='',
+                        type=str, help='path to the distance file')
+    parser.add_argument('--neighbors_path', default='',
+                        type=str, help='path to the neighbors file')
     args = parser.parse_args(raw_args)
-    err = 'You should provide a structure_file'
-    assert args.structure_file is not None, err
+    #err = 'You should provide a structure_file'
+    #assert args.structure_file is not None, err
 
-    coordinates = []
-    xyz = open(args.structure_file)
-    for line in xyz:
-        x, y, z = line.split()
-        coordinates.append([float(x), float(y), float(z)])
-    xyz.close()
+    if args.structure_file!='':
+        coordinates = []
+        xyz = open(args.structure_file)
+        for line in xyz:
+            x, y, z = line.split()
+            coordinates.append([float(x), float(y), float(z)])
+        xyz.close()
 
-    x = np.array(coordinates).reshape(-1, 10, 3)
+        x = np.array(coordinates).reshape(-1, 10, 3)
 
-    vec = estimate_density(x, graph=True)
+        vec = estimate_density(x, graph=True)
 
-    kdt = KDTree(x, metric='euclidean')
+        kdt = KDTree(x, metric='euclidean')
+
+    elif args.distance_path!='' and args.neighbors_path!='':
+        neighbors = np.load(args.neighbors_path)
+        distances = np.load(args.distance_path)
+        den = ((distances ** 2).mean(axis=-1) + 1e-10) ** -0.5
+        vec = den(np.vstack(([*x.T])))
+
     sxt = gudhi.SimplexTree()
 
     print('Building sxt...')
     for ind in tqdm.tqdm(range(x.shape[0])):
         sxt.insert([ind], filtration=-vec[ind])
-        nei = kdt.query([x[ind]], neighbors, return_distance=False)[0][1:]
+        if args.structure_file!='':
+            nei = kdt.query([x[ind]], neighbors, return_distance=False)[0][1:]
+        else:
+            nei =
         for idx in nei:
             sxt.insert([ind, idx], filtration=np.mean([-vec[ind], -vec[idx]]))
 
