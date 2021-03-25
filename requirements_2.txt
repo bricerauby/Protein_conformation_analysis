@@ -34,7 +34,7 @@ pyflakes==2.1.1
 pyparsing==2.4.7
 pyrsistent==0.16.0
 pytest==4.6.10
-PyYAML==5.3.1
+PyYAML==5.4
 ray==0.8.0
 redis==3.5.2
 scandir==1.10.0
