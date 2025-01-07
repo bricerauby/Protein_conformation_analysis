@@ -40,7 +40,7 @@ redis==3.5.2
 scandir==1.10.0
 scipy==1.2.3
 six==1.14.0
-tqdm==4.46.0
+tqdm==4.66.3
 typing==3.7.4.1
 ujson==2.0.3
 wcwidth==0.1.9
