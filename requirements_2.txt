@@ -44,4 +44,4 @@ tqdm==4.66.3
 typing==3.7.4.1
 ujson==2.0.3
 wcwidth==0.1.9
-zipp==1.2.0
+zipp==3.19.1
